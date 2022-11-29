@@ -3,6 +3,12 @@
   "resourceVersion": "1.6",
   "name": "tag-decorated-text",
   "resources": [
+    {"id":{"name":"TagDecoratedTextStyle","path":"scripts/TagDecoratedTextStyle/TagDecoratedTextStyle.yy",},"order":1,},
+    {"id":{"name":"TagDecoratedText","path":"scripts/TagDecoratedText/TagDecoratedText.yy",},"order":0,},
+    {"id":{"name":"f_handwriting","path":"fonts/f_handwriting/f_handwriting.yy",},"order":17,},
+    {"id":{"name":"oTest","path":"objects/oTest/oTest.yy",},"order":16,},
+    {"id":{"name":"fntTagDecoratedTextFontDefault","path":"fonts/fntTagDecoratedTextFontDefault/fntTagDecoratedTextFontDefault.yy",},"order":2,},
+    {"id":{"name":"TagDecoratedTextCommand","path":"scripts/TagDecoratedTextCommand/TagDecoratedTextCommand.yy",},"order":3,},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":14,},
   ],
   "Options": [
@@ -22,7 +28,9 @@
   "RoomOrderNodes": [
     {"roomId":{"name":"Room1","path":"rooms/Room1/Room1.yy",},},
   ],
-  "Folders": [],
+  "Folders": [
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"TagDecoratedText","folderPath":"folders/TagDecoratedText.yy","order":15,},
+  ],
   "AudioGroups": [
     {"resourceType":"GMAudioGroup","resourceVersion":"1.3","name":"audiogroup_default","targets":-1,},
   ],
