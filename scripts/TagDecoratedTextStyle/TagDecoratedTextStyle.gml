@@ -1,117 +1,118 @@
-/**
-* @func TagDecoratedTextStyle()
-* @desc Returns an instance of the tag decorated style class.
-*/
+
+
+
 function TagDecoratedTextStyle() constructor {
-	font = fntTagDecoratedTextFontDefault;
-	styleColor = c_white;
+	font = fnt_tag_decorated_text_font_default;
+	style_color = c_white;
 	alpha = 1;
-	scaleX = 1;
-	scaleY = 1;
-	modX = 0;
-	modY = 0;
-	modAngle = 0;
+	scale_x = 1;
+	scale_y = 1;
+	mod_x = 0;
+	mod_y = 0;
+	mod_angle = 0;
 	
 	/**
-	* @func getCopy()
-	* @desc Returns a new copy of this tag decorated text style.
-	*/
+	 * Returns a new style object that's an exact copy of this one.
+	 * @returns {struct.TagDecoratedTextStyle} Description
+	 */
 	function copy() {
-		var result = new TagDecoratedTextStyle();
-		result.font = font;
-		result.styleColor = styleColor;
-		result.alpha = alpha;
-		result.scaleX = scaleX;
-		result.scaleY = scaleY;
-		result.modX = modX;
-		result.modY = modY;
-		result.modAngle = modAngle;
-		return result;
+		var _result = new TagDecoratedTextStyle();
+		_result.font = font;
+		_result.style_color = styleColor;
+		_result.alpha = alpha;
+		_result.scale_x = scaleX;
+		_result.scale_y = scaleY;
+		_result.mod_x = modX;
+		_result.mod_y = modY;
+		_result.mod_angle = modAngle;
+		return _result;
 	}
 	
+	
 	/**
-	* @func applyCommands(commands)
-	* @desc Returns a new copy of this style instance with the given commands applied.
-	* @arg {Array<Struct.TagDecoratedTextCommand>} commands Array of commands to apply to the original style.
-	*/
-	function applyCommands(commands) {
-		var result = copy();
-		for (var i = 0; i < array_length(commands); i++) {
-			var command = commands[i].command;
-			var aargs = commands[i].aargs;
-			if (command == "rgb") {
-				result.styleColor = make_color_rgb(aargs[0], aargs[1], aargs[2]);
+	 * Get a copy of this style with the given commands applied
+	 * @pure
+	 * @param {array<struct.TagDecoratedTextCommand>} _commands The array of commands to apply to this style.
+	 */
+	function apply_commands(_commands) {
+		var _result = copy();
+		for (var _i = 0; _i < array_length(_commands); _i++) {
+			var _command = _commands[_i].command;
+			var _aargs = _commands[_i].aargs;
+			if (_command == "rgb") {
+				_result.style_color = make_color_rgb(_aargs[0], _aargs[1], _aargs[2]);
 			}
-			if (command == "font") {
-				if (array_length(aargs) != 1) {
+			if (_command == "font") {
+				if (array_length(_aargs) != 1) {
 					show_error("TDS: Incorrect number of args for font style.", true);
 				}
-				if (asset_get_type(aargs[0]) != asset_font) {
+				if (asset_get_type(_aargs[0]) != asset_font) {
 					show_error("TDS: Unrecognized font name.", true);
 				}
-				result.font = asset_get_index(aargs[0]);
+				_result.font = asset_get_index(_aargs[0]);
 			}
-			if (command == "scale") {
-				if (array_length(aargs) != 2) {
+			if (_command == "scale") {
+				if (array_length(_aargs) != 2) {
 					show_error("TDS: Incorrect number of args for scale style.", true);
 				}
-				result.scaleX = aargs[0];
-				result.scaleY = aargs[1];
+				_result.scale_x = _aargs[0];
+				_result.scale_y = _aargs[1];
 			}
-			if (command == "angle") {
-				if (array_length(aargs) != 1) {
+			if (_command == "angle") {
+				if (array_length(_aargs) != 1) {
 					show_error("TDS: Incorrect number of args for angle style.", true);
 				}
-				result.modAngle = aargs[0];
+				_result.mod_angle = _aargs[0];
 			}
-			if (command == "alpha") {
-				if (array_length(aargs) != 1) {
+			if (_command == "alpha") {
+				if (array_length(_aargs) != 1) {
 					show_error("TDS: Incorrect number of args for alpha style.", true);
 				}
-				result.alpha = aargs[0];
+				_result.alpha = _aargs[0];
 			}
-			if (c == "offset") {
-				if (array_length(aargs) != 2) {
+			if (_command == "offset") {
+				if (array_length(_aargs) != 2) {
 					show_error("TDS: Incorrect number of args for offset style.", true)
 				}
-				result.modX = aargs[0];
-				result.modY = aargs[1];
+				_result.mod_x = _aargs[0];
+				_result.mod_y = _aargs[1];
 			}
 		}
-		return result;
+		return _result;
 	}
 	
 	/**
-	* @func isEqual(style)
-	* @desc Returns true if this style and the given style are equal. False otherwise.
-	* @arg {Struct.TagDecoratedTextStyle} style The style to compare this instance to.
-	*/
-	function isEqual(style) {
-		if (style.alpha != alpha) return false;
-		if (style.font != font) return false;
-		if (style.modAngle != modAngle) return false;
-		if (style.modX != modX) return false;
-		if (style.modY != modY) return false;
-		if (style.scaleX != scaleX) return false;
-		if (style.scaleY != scaleY) return false;
-		if (style.styleColor != styleColor) return false;
+	 * Returns a boolean indicating if the given style object is equal to this one.
+	 * @param {struct.TagDecoratedTextStyle} _style The style object to compare to.
+	 * @returns {bool}
+	 */
+	function is_equal(_style) {
+		if (_style.alpha != alpha) return false;
+		if (_style.font != font) return false;
+		if (_style.mod_angle != mod_angle) return false;
+		if (_style.mod_x != mod_x) return false;
+		if (_style.mod_y != mod_y) return false;
+		if (_style.scale_x != scale_x) return false;
+		if (_style.scale_y != scale_y) return false;
+		if (_style.style_color != style_color) return false;
 		return true;
 	}
 }
 
+
 /**
-* @func TagDecoratedTextStyleUndefined()
-* @desc Returns an instance of the tag decorate style class, but each member is set to undefined.
-*/
+ * Get a new style object where each variable is set to undefined.
+ * @returns {struct.TagDecoratedTextStyle}
+ */
 function TagDecoratedTextStyleUndefined() constructor {
-	var result = new TagDecoratedTextStyle();
-	result.font = undefined;
-	result.styleColor = undefined;
-	result.alpha = undefined;
-	result.scaleX = undefined;
-	result.scaleY = undefined;
-	result.modX = undefined;
-	result.modY = undefined;
-	result.modAngle = undefined;
-	return result;
+	var _result = new TagDecoratedTextStyle();
+	_result.font = undefined;
+	_result.style_color = undefined;
+	_result.alpha = undefined;
+	_result.scale_x = undefined;
+	_result.scale_y = undefined;
+	_result.mod_x = undefined;
+	_result.mod_y = undefined;
+	_result.mod_angle = undefined;
+	return _result;
 }

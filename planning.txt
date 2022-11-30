@@ -1,0 +1,76 @@
+29th of November, 2022
+
+We're back, looking at a fancy text system again. It feels good to be doing this again.
+
+We're making our own system because I haven't found one in the wild that I like. The most notable is Scribble, but it doesn't support the awesome new feather intellisense in game maker at all. Oh, that's something important to note. GameMaker has received an excellent intellisense update called Feather that seriously modernizes the language. I think it'll be much easier for us to work with this. But anyway feather is the key to organized code, and I don't want to work with a library that doesn't support it.
+
+So, we should review what we want to accomplish with this library, what we've already accomplished in previous versions, and what we have left to hammer out.
+
+Firstly, I noticed when reviewing the old project that I got word rotations to work. I'm pretty happy about that, and it looks like I had a system working for typing effects, including fancy entry animations. And it looks like we weren't ready for exit effects yet, but they were totally possible. Let's do our best to describe how this was possible:
+
+First there were two key concepts:
+An array of character objects that stored the initial styles and animations of each character for the text. This is created when parsing out the source string.
+
+A linked list of drawable elements. These drawables contain their own styles, animation data, and text content. Each update the animations in the drawables are updated which in turn modify the styles of the drawable. These are the elements actually draw to the text.
+
+Here's a rough illustration of how it works:
+
+Consider this source text: "hello <float>world<><blue>!!!<>"
+
+This would parse into the following character array (empty space means default):
+
+index	character	styles	animations	xy-coordinates(different for each char)
+0		"h"
+1		"e"
+2		"l"
+3		"l"
+4		"o"
+5		" "
+6		"w"					float
+7		"o"					float
+8		"r"					float
+9		"l"					float
+10		"d"					float
+11		"!"			blue
+12		"!"			blue
+13		"!"			blue
+
+And the linked list of drawables would end up looking like this, where each set of brackets is one drawable in the list.
+
+[hello ]-[world]-[!!!]
+
+Each drawable is a single draw text call. Some animations allow text to be grouped together, others don't. For example if we drew text with the "shake" or "tremble" animation, it would be drawn like this:
+
+[t]-[r]-[e]-[m]-[b]-[l]-[e]
+
+We program each animation to be marked as "mergable" or not. If it's mergable then while parsing text and/or adding drawables, drawables with unmergable animations will not merge together. This matters when we introduce the concept of typing effects. Let's say we had a character array of the text "hello my name is Evan" and the drawables we've added are:
+
+[hello my name is Ev]
+
+When we add the letter "a", at first it will look like this:
+
+[hello my name is Ev][a]
+
+so that we can apply cool entry effects to the character that's just been added, like fading in or rising up. But once that entry animation is finished that drawable gets merged with the others:
+
+[hello my name is Eva]
+
+Of course, this is assuming that character has the same, or at least mergable animations with the other drawables. If not it will remain separate.
+
+Another important element to discuss is line breaks. Notice in the above example of the character array there is a field for xy-coordinates. This is the default position of the character when draw to the screen (relative to wherever the user decides to draw the text). These positions are determined during the initial text parsing, and are based on the styles applied to each character, and of course when line breaks occur. For example all characters on the top line will have a y position of 0, and all characters on the next line will likely have a y position of 16 or something. And all characters on line 3 would have a y position of 32, and so on. 
+
+Additionally we allowed for "characters" to contain sprites. In those cases we used the width/height of the sprite to determine line data instead of a character. Animations still applied to sprites the same way as text (I believe we just use the draw sprite call instead of draw text).
+
+I think I've explained the system well enough to myself. But there are a couple things I want to figure out. Firstly, something we struggled with in our parsing was how to handle when a sprite gets parsed out. It's tricky because it's like a command which normally doesn't affect xy position or line breaks. Now we were able to add this no problem because adding a sprite is the same as adding another character and our parsing logic already supported this. But how do I handle a magical line break command?
+
+I have one idea, and perhaps I've even thought of this before in one of my diary ramblings. We could in fact mark characters as "line break" characters. Characters could be marked as we parse through our source string. Note that this marking would apply to the last character we parsed and not the next. Actually, instead of a single flag it should be an integer counter so we could add multiple line breaks after each character. Recall that the way we did parsing we first go through to parse out commands and ensure all characters in the character array have the correct stylings. We then go through again and determine the xy position of all characters based on said styles (remember we don't use animations to determine xy position and line breaks). Since the parsing for styles/commands happens first, we could easily just add this line break counter to characters during the style parsing and then use this data to determine line breaks in the xy calculation stage.
+
+Another slightly tricky thing will be left, right, and center alignment. We need an elegant way to determine the width of each line excluding the spaces at the end. This will help us easily draw center and right alignment text. This feature I'm willing to just ignore for now and figure out as I go.
+
+At this point, I feel like I know enough to start programming again. I wonder if it makes more sense to continue copying over code from the previous project or try and start fresh and add elements as I go? Actually what we should do is plan out the types/structs we need to create first. These will involve mostly copying things from the old project and adjusting names as we go as well as figuring out cool feather typing stuff. Once we've done that we can begin the parsing code which was mostly figured out in the old system. Those classes are:
+
+Character	// the character object stored in an array to keep track of defaults
+Drawable	// object in a linked list that actually gets drawn
+Style		// style of each character/drawable
+Animation	// the object actually updated each frame to alter styles of the drawable
+Command		// simple struct parsed from source string that determines styles and animations.
