@@ -1,6 +1,6 @@
-
-
-
+/**
+ * Create a new tag decorated text style struct with default styles.
+ */
 function TagDecoratedTextStyle() constructor {
 	font = fnt_tag_decorated_text_font_default;
 	style_color = c_white;
@@ -13,21 +13,19 @@ function TagDecoratedTextStyle() constructor {
 	
 	/**
 	 * Returns a new style object that's an exact copy of this one.
-	 * @returns {struct.TagDecoratedTextStyle} Description
 	 */
 	function copy() {
 		var _result = new TagDecoratedTextStyle();
 		_result.font = font;
-		_result.style_color = styleColor;
+		_result.style_color = style_color;
 		_result.alpha = alpha;
-		_result.scale_x = scaleX;
-		_result.scale_y = scaleY;
-		_result.mod_x = modX;
-		_result.mod_y = modY;
-		_result.mod_angle = modAngle;
+		_result.scale_x = scale_x;
+		_result.scale_y = scale_y;
+		_result.mod_x = mod_x;
+		_result.mod_y = mod_y;
+		_result.mod_angle = mod_angle;
 		return _result;
 	}
-	
 	
 	/**
 	 * Get a copy of this style with the given commands applied
@@ -37,12 +35,12 @@ function TagDecoratedTextStyle() constructor {
 	function apply_commands(_commands) {
 		var _result = copy();
 		for (var _i = 0; _i < array_length(_commands); _i++) {
-			var _command = _commands[_i].command;
+			var _command = _commands[_i].command; 
 			var _aargs = _commands[_i].aargs;
-			if (_command == "rgb") {
+			if (_command == TAG_DECORATED_TEXT_COMMANDS.RGB) {
 				_result.style_color = make_color_rgb(_aargs[0], _aargs[1], _aargs[2]);
 			}
-			if (_command == "font") {
+			if (_command == TAG_DECORATED_TEXT_COMMANDS.FONT) {
 				if (array_length(_aargs) != 1) {
 					show_error("TDS: Incorrect number of args for font style.", true);
 				}
@@ -51,26 +49,26 @@ function TagDecoratedTextStyle() constructor {
 				}
 				_result.font = asset_get_index(_aargs[0]);
 			}
-			if (_command == "scale") {
+			if (_command == TAG_DECORATED_TEXT_COMMANDS.SCALE) {
 				if (array_length(_aargs) != 2) {
 					show_error("TDS: Incorrect number of args for scale style.", true);
 				}
 				_result.scale_x = _aargs[0];
 				_result.scale_y = _aargs[1];
 			}
-			if (_command == "angle") {
+			if (_command == TAG_DECORATED_TEXT_COMMANDS.ANGLE) {
 				if (array_length(_aargs) != 1) {
 					show_error("TDS: Incorrect number of args for angle style.", true);
 				}
 				_result.mod_angle = _aargs[0];
 			}
-			if (_command == "alpha") {
+			if (_command == TAG_DECORATED_TEXT_COMMANDS.ALPHA) {
 				if (array_length(_aargs) != 1) {
 					show_error("TDS: Incorrect number of args for alpha style.", true);
 				}
 				_result.alpha = _aargs[0];
 			}
-			if (_command == "offset") {
+			if (_command == TAG_DECORATED_TEXT_COMMANDS.OFFSET) {
 				if (array_length(_aargs) != 2) {
 					show_error("TDS: Incorrect number of args for offset style.", true)
 				}
@@ -97,22 +95,18 @@ function TagDecoratedTextStyle() constructor {
 		if (_style.style_color != style_color) return false;
 		return true;
 	}
-}
-
-
-/**
- * Get a new style object where each variable is set to undefined.
- * @returns {struct.TagDecoratedTextStyle}
- */
-function TagDecoratedTextStyleUndefined() constructor {
-	var _result = new TagDecoratedTextStyle();
-	_result.font = undefined;
-	_result.style_color = undefined;
-	_result.alpha = undefined;
-	_result.scale_x = undefined;
-	_result.scale_y = undefined;
-	_result.mod_x = undefined;
-	_result.mod_y = undefined;
-	_result.mod_angle = undefined;
-	return _result;
+	
+	/**
+	 * Sets each variable in this style to undefined.
+	 */
+	function set_undefined() {
+		font = undefined;
+		style_color = undefined;
+		alpha = undefined;
+		scale_x = undefined;
+		scale_y = undefined;
+		mod_x = undefined;
+		mod_y = undefined;
+		mod_angle = undefined;
+	}
 }

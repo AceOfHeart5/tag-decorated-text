@@ -21,13 +21,29 @@ enum TAG_DECORATED_TEXT_COMMANDS {
 	SILVER,
 	BROWN,
 	PINK,
-	RGB
+	RGB,
+	
+	// styles
+	FONT,
+	SCALE,
+	ANGLE,
+	ALPHA,
+	OFFSET,
+	
+	// animations
+	FADE,
+	SHAKE,
+	TREMBLE,
+	CHROMATIC,
+	WCHROMATIC,
+	WAVE,
+	FLOAT,
+	WOBBLE
 }
 
 /**
  * Get entry in TAG_DECORATED_TEXT_COMMANDS enum from given string. Returns -1 if no matching entry found.
  * @param {string} _command The command as a string.
- * @returns {real} entry in TAG_DECORATED_TEXT_COMMANDS enum
  */
 function string_to_tag_decorated_text_command(_command) {
 	_command = string_lower(_command);
@@ -93,6 +109,48 @@ function string_to_tag_decorated_text_command(_command) {
 	}
 	if (_command == "pink") {
 		return TAG_DECORATED_TEXT_COMMANDS.PINK;
+	}
+	if (_command == "rgb") {
+		return TAG_DECORATED_TEXT_COMMANDS.RGB;
+	}
+	if (_command == "font") {
+		return TAG_DECORATED_TEXT_COMMANDS.FONT;
+	}
+	if (_command == "scale") {
+		return TAG_DECORATED_TEXT_COMMANDS.SCALE;
+	}
+	if (_command == "angle") {
+		return TAG_DECORATED_TEXT_COMMANDS.ANGLE;
+	}
+	if (_command == "alpha") {
+		return TAG_DECORATED_TEXT_COMMANDS.ALPHA;
+	}
+	if (_command == "offset") {
+		return TAG_DECORATED_TEXT_COMMANDS.OFFSET;
+	}
+	if (_command == "fade") {
+		return TAG_DECORATED_TEXT_COMMANDS.FADE;
+	}
+	if (_command == "shake") {
+		return TAG_DECORATED_TEXT_COMMANDS.SHAKE;
+	}
+	if (_command == "tremble") {
+		return TAG_DECORATED_TEXT_COMMANDS.TREMBLE;
+	}
+	if (_command == "chromatic") {
+		return TAG_DECORATED_TEXT_COMMANDS.CHROMATIC;
+	}
+	if (_command == "wchromatic") {
+		return TAG_DECORATED_TEXT_COMMANDS.WCHROMATIC;
+	}
+	if (_command == "wave") {
+		return TAG_DECORATED_TEXT_COMMANDS.WAVE;
+	}
+	if (_command == "float") {
+		return TAG_DECORATED_TEXT_COMMANDS.FLOAT;
+	}
+	if (_command == "wobble") {
+		return TAG_DECORATED_TEXT_COMMANDS.WOBBLE;
 	}
 	return -1;
 }
