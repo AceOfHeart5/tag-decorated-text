@@ -20,14 +20,96 @@ global.tds_animation_default_shake_magnitude = 1;
 /**
  * Set default values for shake animation.
  * @param {real} _time_ms time in ms text is held out of place
- * @param {real} _magnitude variance in pixels text can be offset by
+ * @param {real} _magnitude magnitude in pixels text can be offset by
  */
 function tds_animation_default_shake(_time_ms, _magnitude) {
 	global.tds_animation_default_shake_time_ms = _time_ms;
 	global.tds_animation_default_shake_magnitude = _magnitude;
 }
 
+global.tds_animation_default_tremble_time_ms = 80;
+global.tds_animation_default_tremble_magnitude = 2;
 
+/**
+ * Set default values for tremble animation.
+ * @param {real} _time_ms time in ms text is held out of place
+ * @param {real} _magnitude magnitude in pixels text can be offset by
+ */
+function tds_animation_default_tremble(_time_ms, _magnitude) {
+	global.tds_animation_default_tremble_time_ms = _time_ms;
+	global.tds_animation_default_tremble_magnitude = _magnitude;
+}
+
+global.tds_animation_default_chromatic_change_ms = 32;
+global.tds_animation_default_chromatic_steps_per_change = 10;
+global.tds_animation_default_chromatic_char_offset = -30;
+
+/**
+ * Set default values for chromatic animation.
+ * @param {real} _change_ms time in ms between color changes
+ * @param {real} _steps_per_change the integer steps in the rgb value per change
+ * @param {real} _char_offset the difference in color between each character
+ */
+function tds_animation_default_chromatic(_change_ms, _steps_per_change, _char_offset) {
+	global.tds_animation_default_chromatic_change_ms = _change_ms;
+	global.tds_animation_default_chromatic_steps_per_change = _steps_per_change;
+	global.tds_animation_default_chromatic_char_offset = _char_offset;
+}
+
+global.tds_animation_default_wchromatic_change_ms = 32;
+global.tds_animation_default_wchromatic_steps_per_change = 10;
+
+/**
+ * Set default values for wchromatic (word chromatic) animation.
+ * @param {real} _change_ms time in ms between color changes
+ * @param {real} _steps_per_change the integer steps in the rgb value per change
+ */
+function tds_animation_default_wchromatic(_change_ms, _steps_per_change) {
+	global.tds_animation_default_wchromatic_change_ms = _change_ms;
+	global.tds_animation_default_wchromatic_steps_per_change = _steps_per_change;
+}
+
+global.tds_animation_default_wave_cycle_time_ms = 1000;
+global.tds_animation_default_wave_magnitude = 3;
+global.tds_animation_default_wave_char_offset = 0.5;
+
+/**
+ * Set default values for wave animation.
+ * @param {real} _cycle_time_ms time in ms per cycle
+ * @param {real} _magnitude the magnitude of vertical motion the text will have
+ * @param {real} _char_offset the difference in motion between each character
+ */
+function tds_animation_default_wave(_cycle_time_ms, _magnitude, _char_offset) {
+	global.tds_animation_default_wave_cycle_time = _cycle_time_ms;
+	global.tds_animation_default_wave_magnitude = _magnitude;
+	global.tds_animation_default_wave_char_offset = _char_offset;
+}
+
+global.tds_animation_default_float_cycle_time_ms = 1000;
+global.tds_animation_default_float_magnitude = 3;
+
+/**
+ * Set default values for the float animation.
+ * @param {real} _cycle_time_ms time in ms per cycle
+ * @param {real} _magnitude the magnitude of vertical motion the text will have
+ */
+function tds_animation_default_float(_cycle_time_ms, _magnitude) {
+	global.tds_animation_default_float_cycle_time = _cycle_time_ms;
+	global.tds_animation_default_float_magnitude = _magnitude;
+}
+
+global.tds_animation_default_wobble_cycle_time_ms = 1000;
+global.tds_animation_default_wobble_max_angle = 10;
+
+/**
+ * Set default values for the wobble animation.
+ * @param {real} _cycle_time_ms time in ms per cycle
+ * @param {real} _max_angle maximum angle the wobble will reach in degree
+ */
+function tds_animation_default_wobble(_cycle_time_ms, _max_angle) {
+	global.tds_animation_default_wobble_cycle_time_ms = _cycle_time_ms;
+	global.tds_animation_default_wobble_max_angle = _max_angle;
+}
 
 /**
  * @param {real} _command TAG_DECORATED_TEXT_COMMAND enum entry
@@ -56,7 +138,7 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			alpha_max = params[1];
 			cycle_time = params[2];
 		} else if (array_length(params) != 0) {
-			show_error("TDS Error: Improper number of args for fade animation!", true);
+			show_error("TDT Error: Improper number of args for fade animation!", true);
 		}
 		
 		/// @param {real} _time_ms
@@ -69,9 +151,10 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			}
 			var _new_alpha = alpha_min + _check/cycle_time * (alpha_max - alpha_min);
 			style.alpha = _new_alpha;
-		}
+		};
 	}
 	
+	// we could totally combine the shake and tremble animation here, do later
 	if (command == TAG_DECORATED_TEXT_COMMANDS.SHAKE) {
 		mergeable = false;
 		shake_time = global.tds_animation_default_shake_time_ms;
@@ -80,15 +163,139 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			shake_time = params[0];
 			shake_magnitude = params[1];
 		} else if (array_length(params) != 0) {
-			show_error("TDS Error: Improper number of args for shake animation!", true);
+			show_error("TDT Error: Improper number of args for shake animation!", true);
 		}
 		
 		/// @param {real} _time_ms
 		update = function(_time_ms) {
 			var _index_x = floor(_time_ms / shake_time) + character_index * 1000;
-			var _index_y= _index_x + 4321;
+			var _index_y= _index_x + 4321; // arbitrary character index offset
 			style.mod_x = floor(shake_magnitude * 2 * get_tag_decorated_text_random(_index_x)) - shake_magnitude;
 			style.mod_y = floor(shake_magnitude * 2 * get_tag_decorated_text_random(_index_y)) - shake_magnitude;
+		};
+	}
+	
+	if (command == TAG_DECORATED_TEXT_COMMANDS.TREMBLE) {
+		shake_time = global.tds_animation_default_tremble_time_ms;
+		shake_magnitude = global.tds_animation_default_tremble_magnitude;
+		if (array_length(params) == 2) {
+			shake_time = params[0];
+			shake_magnitude = params[1];
+		} else if (array_length(params) != 0) {
+			show_error("TDT Error: Improper number of args for tremble animation!", true);
+		}
+		
+		/// @param {real} _time_ms
+		update = function(_time_ms) {
+			var _index_x = floor(time_ms / shake_time);
+			var _index_y = _index_x + 4321; // arbitrary character index offset
+			style.mod_x = floor(shake_magnitude * 2 * get_tag_decorated_text_random(_index_x)) - shake_magnitude;
+			style.mod_y = floor(shake_magnitude * 2 * get_tag_decorated_text_random(_index_y)) - shake_magnitude;
+		};
+	}
+	
+	if (command == TAG_DECORATED_TEXT_COMMANDS.CHROMATIC) {
+		mergeable = false;
+		change_ms = global.tds_animation_default_chromatic_change_ms;
+		steps_per_change = global.tds_animation_default_chromatic_steps_per_change;
+		char_offset = global.tds_animation_default_chromatic_char_offset;
+		if (array_length(params) == 3) {
+			change_ms = params[0];
+			steps_per_change = params[1];
+			char_offset = params[2];
+		} else if (array_length(params) != 0) {
+			show_error("TDT Error: Improper number of args for chromatic animation!", true);
+		}
+		
+		/// @param {real} _time_ms
+		update = function(_time_ms) {
+			var _index = floor(_time_ms/change_ms) * steps_per_change;
+			_index += char_offset * character_index;
+			style.s_color = tag_decorated_text_get_chromatic_color_at(_index);
+		};
+	}
+	
+	if (command == TAG_DECORATED_TEXT_COMMANDS.WCHROMATIC) {
+		change_ms = global.tds_animation_default_wchromatic_change_ms;
+		steps_per_change = global.tds_animation_default_wchromatic_steps_per_change;
+		if (array_length(params) == 2) {
+			change_ms = params[0];
+			steps_per_change = params[1];
+		} else if (array_length(params) != 0) {
+			show_error("TDT Error: Improper number of args for wchromatic animation!", true);
+		}
+		
+		/// @param {real} _time_ms
+		update = function(_time_ms) {
+			var _index = floor(_time_ms/change_ms) * steps_per_change;
+			style.s_color = tag_decorated_text_get_chromatic_color_at(_index);
+		};
+	}
+	
+	if (command == TAG_DECORATED_TEXT_COMMANDS.WAVE) {
+		mergeable = false;
+		cycle_time = global.tds_animation_default_wave_cycle_time_ms;
+		magnitude = global.tds_animation_default_wave_magnitude;
+		char_offset = global.tds_animation_default_wave_char_offset;
+		if (array_length(params) == 3) {
+			change_ms = params[0];
+			magnitude = params[1];
+			char_offset = params[2];
+		} else if (array_length(params) != 0) {
+			show_error("TDT Error: Improper number of args for wave animation!", true);
+		}
+		
+		/// @param {real} _time_ms
+		update = function(_time_ms) {
+			_time_ms %= cycle_time;
+			var _percent = _time_ms / cycle_time;
+			style.mod_y = sin(percent * -2 * pi + char_offset * character_index) * magnitude;
+		};
+	}
+	
+	if (command == TAG_DECORATED_TEXT_COMMANDS.FLOAT) {
+		cycle_time = global.tds_animation_default_float_cycle_time_ms;
+		magnitude = global.tds_animation_default_float_magnitude;
+		if (array_length(params) == 2) {
+			change_ms = params[0];
+			magnitude = params[1];
+		} else if (array_length(params) != 0) {
+			show_error("TDS Error: Improper number of args for float animation!", true);
+		}
+		
+		/// @param {real} _time_ms
+		update = function(_time_ms) {
+			_time_ms %= cycle_time;
+			var _percent = _time_ms / cycle_time;
+			style.mod_y = sin(_percent * 2 * pi + 0.5 * pi) * magnitude;
+		}
+	}
+	
+	if (command == TAG_DECORATED_TEXT_COMMANDS.WOBBLE) {
+		cycle_time = global.tds_animation_default_wobble_cycle_time_ms;
+		max_angle = global.tds_animation_default_wobble_max_angle;
+		if (array_length(params) == 2) {
+			cycle_time = params[0];
+			max_angle = params[1];
+		} else if (array_length(params) != 0) {
+			show_error("TDT Error: Improper number of args for wobble animation!", true);
+		}
+		
+		/// @param {real} _time_ms
+		update = function(_time_ms) {
+			_time_ms %= cycle_time;
+			var _percent = _time_ms / cycle_time;
+			style.mod_angle = sin(_percent * 2 * pi + -0.5) * max_angle;
+			var _vec_x = content_width / -2;
+			var _vec_y = content_height / -2;
+			var _hypotenuse = point_distance(0, 0, _vec_x, _vec_y);
+			var _theta = point_direction(0, 0, _vec_x, _vec_y);
+			_theta += style.mod_angle;
+			style.mod_x = lengthdir_x(_hypotenuse, _theta) - _vec_x;
+			style.mod_y = lengthdir_y(_hypotenuse, _theta) - _vec_y;
+			if (style.mod_angle != 0 && os_browser == browser_not_a_browser) {
+				style.mod_y -= 2; // magic angle correct number, native only
+			}
 		}
 	}
 }
