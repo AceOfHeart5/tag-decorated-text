@@ -15,7 +15,7 @@ function TagDecoratedText(_source_string) constructor {
 	 * Set the text of this TagDecoratedText element.
 	 * @param {string} _new_source_string
 	 */
-	function set_text(_new_source_string) {
+	set_text = function(_new_source_string) {
 		source = _new_source_string;
 		var _line_width = 0;
 		var _line_index = 0;

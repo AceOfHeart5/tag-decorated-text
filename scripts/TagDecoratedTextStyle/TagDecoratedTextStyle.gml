@@ -14,7 +14,7 @@ function TagDecoratedTextStyle() constructor {
 	/**
 	 * Returns a new style object that's an exact copy of this one.
 	 */
-	function copy() {
+	get_copy = function() {
 		var _result = new TagDecoratedTextStyle();
 		_result.font = font;
 		_result.style_color = style_color;
@@ -29,11 +29,10 @@ function TagDecoratedTextStyle() constructor {
 	
 	/**
 	 * Get a copy of this style with the given commands applied
-	 * @pure
 	 * @param {array<struct.TagDecoratedTextCommand>} _commands The array of commands to apply to this style.
 	 */
-	function apply_commands(_commands) {
-		var _result = copy();
+	get_copy_with_commands_applied = function(_commands) {
+		var _result = get_copy();
 		for (var _i = 0; _i < array_length(_commands); _i++) {
 			var _command = _commands[_i].command; 
 			var _aargs = _commands[_i].aargs;
@@ -84,7 +83,7 @@ function TagDecoratedTextStyle() constructor {
 	 * @param {struct.TagDecoratedTextStyle} _style The style object to compare to.
 	 * @returns {bool}
 	 */
-	function is_equal(_style) {
+	is_equal = function(_style) {
 		if (_style.alpha != alpha) return false;
 		if (_style.font != font) return false;
 		if (_style.mod_angle != mod_angle) return false;
@@ -98,8 +97,9 @@ function TagDecoratedTextStyle() constructor {
 	
 	/**
 	 * Sets each variable in this style to undefined.
+	 * @self
 	 */
-	function set_undefined() {
+	set_undefined = function() {
 		font = undefined;
 		style_color = undefined;
 		alpha = undefined;

@@ -3,6 +3,7 @@
   "resourceVersion": "1.6",
   "name": "tag-decorated-text",
   "resources": [
+    {"id":{"name":"TagDecoratedTextMisc","path":"scripts/TagDecoratedTextMisc/TagDecoratedTextMisc.yy",},"order":5,},
     {"id":{"name":"TagDecoratedTextStyle","path":"scripts/TagDecoratedTextStyle/TagDecoratedTextStyle.yy",},"order":1,},
     {"id":{"name":"TagDecoratedText","path":"scripts/TagDecoratedText/TagDecoratedText.yy",},"order":0,},
     {"id":{"name":"TagDecoratedTextAnimation","path":"scripts/TagDecoratedTextAnimation/TagDecoratedTextAnimation.yy",},"order":4,},
@@ -16,9 +17,9 @@
     {"name":"HTML5","path":"options/html5/options_html5.yy",},
     {"name":"Linux","path":"options/linux/options_linux.yy",},
     {"name":"macOS","path":"options/mac/options_mac.yy",},
+    {"name":"Main","path":"options/main/options_main.yy",},
     {"name":"Windows","path":"options/windows/options_windows.yy",},
     {"name":"operagx","path":"options/operagx/options_operagx.yy",},
-    {"name":"Main","path":"options/main/options_main.yy",},
   ],
   "defaultScriptType": 1,
   "isEcma": false,

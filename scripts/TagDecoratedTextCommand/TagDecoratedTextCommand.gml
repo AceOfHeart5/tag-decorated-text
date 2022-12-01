@@ -171,7 +171,7 @@ function TagDecoratedTextCommand(_command, _command_arguments) constructor {
 	 * @param {real} _blue Blue hue of the color.
 	 * @ignore
 	 */
-	function convert_to_rgb(_red, _green, _blue) {
+	convert_to_rgb = function(_red, _green, _blue) {
 		array_resize(aargs, 3);
 		aargs[0] = _red;
 		aargs[1] = _green;

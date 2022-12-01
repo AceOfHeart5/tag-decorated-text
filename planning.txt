@@ -74,3 +74,56 @@ Drawable	// object in a linked list that actually gets drawn
 Style		// style of each character/drawable
 Animation	// the object actually updated each frame to alter styles of the drawable
 Command		// simple struct parsed from source string that determines styles and animations.
+
+
+30th of November, 2022
+
+So I just realized that the feather updates don't do what I thought. It's not scope aware, which means we still got nonsensical auto-complete options when typing. That bothers me so much.
+
+Before deciding how to continue we should experiment a bit and determine if our old strategy of copying GameMakers style for functions and acting on objects will still work. I mean obviously it will since it worked before, but I want to know if it'll stand up our current standards. Namely if I do something like this:
+
+function act_on_my_struct(_my_struct) {
+	// do stuff
+	_my_struct. // will this only auto complete the variables created in _my_struct???
+}
+
+Will the question in the above comment be true?
+
+What on earth, suddenly the auto complete is working correctly! Waaaaa
+
+I have done some exploring and I understand it now (I think). The auto complete in GameMaker has improved since I started, but it's not perfect yet. Originally it would suggest literally any variable you declared in the project. That's because it was just checking the actual string values in the game files. Now it actually parses through your context and objects to find variables. However it appears to go as deep as it can. What I mean by this any variables associated with objects or structs in your context also get suggested. Here's an example.
+
+function StructA() constructor {
+	a = "hello";
+	b = 5;
+}
+
+function StructB() constructor {
+	c = [];
+	d = ds_list_create();
+}
+
+function Container() constructor {
+	struct_a = new StructA();
+	struct_b = new StructB(); 
+}
+
+var _test = new Container();
+
+In this case, if you were to then type "test." you would see the following show up in the auto-complete:
+a
+b
+c
+d
+struct_a
+struct_b
+
+It's like it's parsing through everything that could potentially be accessed from this context without referencing some global variable or something.
+
+So I have a couple thoughts. Originally we handled GameMakers poor auto complete by either ignoring it, and keeping track of everything ourselves (annoying), or making every variable name so long that it could never be mistaken based on context (also annoying in a different way). I think for now we should push on using traditional coding style and simply deal with the excessive auto complete. In time it's possible GameMaker will be updated to have perfect scope aware auto complete. 
+
+I'm also having second thoughts about re-typing the entire text library and instead copying over the old library and updating it so I can know everything is working. But I'm not sure about this? Having to re-write everything really makes me go over my own code and understand the purpose of every line.
+
+For example I just came across the "content_width" in the animation struct. Animations (specifically wobble) need the width and height of the text they're animating sometimes. I forgot about this and wouldn't have understood it unless I was reviewing the code. 
+
+Notably though, that content width variable is not elegant. That value gets set by multiple different functions in multiple places. We'll probably need to review how this is designed later but I think that'll be easier with the new feather limitations. 
