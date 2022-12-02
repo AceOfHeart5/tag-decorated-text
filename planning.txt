@@ -127,3 +127,17 @@ I'm also having second thoughts about re-typing the entire text library and inst
 For example I just came across the "content_width" in the animation struct. Animations (specifically wobble) need the width and height of the text they're animating sometimes. I forgot about this and wouldn't have understood it unless I was reviewing the code. 
 
 Notably though, that content width variable is not elegant. That value gets set by multiple different functions in multiple places. We'll probably need to review how this is designed later but I think that'll be easier with the new feather limitations. 
+
+1st of December, 2022
+
+A couple quick notes, I'm seeing some things that might be improved. For example it looks like drawables contain their own mergeable value. However this is determined by character and animation data. I think instead of making sure it's set correctly every time we change it, we should be able to derive it based on the data. However I want to check something first. I want to see if the new array_map and array_reduce functions are faster than doing this manually. Even if they're not, It likely still makes more sense to calculate some of these values. 
+
+By a quick check, the map function is twice as fast as manual, and reduce is a good chunk faster, but not dramatically.
+
+In any case, I think we can change our drawable function to instead accept a reference to the character array and an index in that array. From there we can use our start_i and end_i to determine content, content width, and all that.
+
+On reflection I think we can make the drawable calculate its content width, but we can't do that with animations. The reason is because animations will need to reference their content_width and height each frame and draw cycle. Although it makes more sense to have it calculated, it'll be more effecient to calculate it on merges and store it.
+
+Ugh, no. Even if we do make functions that calculate content, it still makes more sense to store this data in a variable because it will be referenced every single draw cycle. We need to keep the performance of this as high as possible.
+
+After reading our own code a bit more, it looks like the left/right fields of drawables gets calculated outside the space of drawables. It happens on the "add_drawable" function, which is a method in the tag-decorated-text class. Perhaps we should rework our constructor to accept a left and right link immediately?

@@ -11,6 +11,7 @@
     {"id":{"name":"oTest","path":"objects/oTest/oTest.yy",},"order":16,},
     {"id":{"name":"TagDecoratedTextCharacter","path":"scripts/TagDecoratedTextCharacter/TagDecoratedTextCharacter.yy",},"order":6,},
     {"id":{"name":"fnt_tag_decorated_text_font_default","path":"fonts/fnt_tag_decorated_text_font_default/fnt_tag_decorated_text_font_default.yy",},"order":2,},
+    {"id":{"name":"TagDecoratedTextDrawable","path":"scripts/TagDecoratedTextDrawable/TagDecoratedTextDrawable.yy",},"order":8,},
     {"id":{"name":"TagDecoratedTextCommand","path":"scripts/TagDecoratedTextCommand/TagDecoratedTextCommand.yy",},"order":3,},
     {"id":{"name":"spr_tag_decorated_text_default","path":"sprites/spr_tag_decorated_text_default/spr_tag_decorated_text_default.yy",},"order":7,},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":14,},
