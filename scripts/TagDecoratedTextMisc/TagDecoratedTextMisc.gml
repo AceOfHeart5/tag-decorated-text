@@ -1,4 +1,9 @@
 
+// this may work instead of the code below, test later
+var _test = array_map(array_create(1000000, 0), function() {
+	return random(1);
+});
+
 /// @ignore
 global.tag_decorated_text_animation_random_array = array_create(1000000, 0);
 

@@ -3,7 +3,7 @@ global.tds_animation_default_fade_alpha_max = 1;
 global.tds_animation_default_fade_cycle_time_ms = 1000;
 
 /**
- * Set default values for fade animation.
+ * @desc Set default values for fade animation.
  * @param {real} _alpha_min minimum alpha
  * @param {real} _alpha_max maximum alpha
  * @param {real} _cycle_time_ms time in ms for one cycle of animation
@@ -128,6 +128,30 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 	
 	/// @param {real} _time_ms
 	update = function(_time_ms) {};
+	
+	/**
+	 * Get a copy of this animation instance.
+	 */
+	copy = function() {
+		var _result = new TagDecoratedTextAnimation(command, params, character_index);
+		_result.style = style;
+		_result.mergeable = mergeable;
+		_result.content_width = content_width;
+		_result.content_height = content_height;
+		return _result;
+	};
+	
+	/**
+	 * Get this animations command and params as a string. Useful for comparing against other animations.
+	 */
+	get_hash = function() {
+		/// @param {string} _prev
+		/// @param {any} _param
+		var _reduce = function(_prev, _param) {
+			return _prev + string(_param);
+		};
+		return string(command) + string(array_reduce(params, _reduce, ""));
+	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.FADE) {
 		alpha_min = global.tds_animation_default_fade_alpha_min;

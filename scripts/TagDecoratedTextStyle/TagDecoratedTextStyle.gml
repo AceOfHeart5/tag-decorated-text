@@ -14,7 +14,7 @@ function TagDecoratedTextStyle() constructor {
 	/**
 	 * Returns a new style object that's an exact copy of this one.
 	 */
-	get_copy = function() {
+	copy = function() {
 		var _result = new TagDecoratedTextStyle();
 		_result.font = font;
 		_result.style_color = style_color;
@@ -31,8 +31,8 @@ function TagDecoratedTextStyle() constructor {
 	 * Get a copy of this style with the given commands applied
 	 * @param {array<struct.TagDecoratedTextCommand>} _commands The array of commands to apply to this style.
 	 */
-	get_copy_with_commands_applied = function(_commands) {
-		var _result = get_copy();
+	copy_with_commands_applied = function(_commands) {
+		var _result = copy();
 		for (var _i = 0; _i < array_length(_commands); _i++) {
 			var _command = _commands[_i].command; 
 			var _aargs = _commands[_i].aargs;
