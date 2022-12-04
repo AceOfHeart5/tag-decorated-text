@@ -134,7 +134,7 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 	 */
 	copy = function() {
 		var _result = new TagDecoratedTextAnimation(command, params, character_index);
-		_result.style = style;
+		_result.style = style.copy();
 		_result.mergeable = mergeable;
 		_result.content_width = content_width;
 		_result.content_height = content_height;
@@ -153,6 +153,9 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 		return string(command) + string(array_reduce(params, _reduce, ""));
 	}
 	
+	// we only return a valid animation object if the command used is an animation command
+	var _valid_animation_command = false;
+	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.FADE) {
 		alpha_min = global.tds_animation_default_fade_alpha_min;
 		alpha_max = global.tds_animation_default_fade_alpha_max;
@@ -165,6 +168,8 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			show_error("TDT Error: Improper number of args for fade animation!", true);
 		}
 		
+		style.alpha = 1;
+		
 		/// @param {real} _time_ms
 		update = function(_time_ms) {
 			var _check = _time_ms % (cycle_time * 2);
@@ -176,6 +181,7 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			var _new_alpha = alpha_min + _check/cycle_time * (alpha_max - alpha_min);
 			style.alpha = _new_alpha;
 		};
+		_valid_animation_command = true;
 	}
 	
 	// we could totally combine the shake and tremble animation here, do later
@@ -190,13 +196,18 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			show_error("TDT Error: Improper number of args for shake animation!", true);
 		}
 		
+		style.mod_x = 0;
+		style.mod_y = 0;
+		
 		/// @param {real} _time_ms
 		update = function(_time_ms) {
 			var _index_x = floor(_time_ms / shake_time) + character_index * 1000;
 			var _index_y= _index_x + 4321; // arbitrary character index offset
-			style.mod_x = floor(shake_magnitude * 2 * get_tag_decorated_text_random(_index_x)) - shake_magnitude;
-			style.mod_y = floor(shake_magnitude * 2 * get_tag_decorated_text_random(_index_y)) - shake_magnitude;
+			style.mod_x = floor(shake_magnitude * 2 * tag_decorated_text_get_random(_index_x)) - shake_magnitude;
+			style.mod_y = floor(shake_magnitude * 2 * tag_decorated_text_get_random(_index_y)) - shake_magnitude;
 		};
+		
+		_valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.TREMBLE) {
@@ -209,13 +220,18 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			show_error("TDT Error: Improper number of args for tremble animation!", true);
 		}
 		
+		style.mod_x = 0;
+		style.mod_y = 0;
+		
 		/// @param {real} _time_ms
 		update = function(_time_ms) {
 			var _index_x = floor(time_ms / shake_time);
 			var _index_y = _index_x + 4321; // arbitrary character index offset
-			style.mod_x = floor(shake_magnitude * 2 * get_tag_decorated_text_random(_index_x)) - shake_magnitude;
-			style.mod_y = floor(shake_magnitude * 2 * get_tag_decorated_text_random(_index_y)) - shake_magnitude;
+			style.mod_x = floor(shake_magnitude * 2 * tag_decorated_text_get_random(_index_x)) - shake_magnitude;
+			style.mod_y = floor(shake_magnitude * 2 * tag_decorated_text_get_random(_index_y)) - shake_magnitude;
 		};
+		
+		_valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.CHROMATIC) {
@@ -231,12 +247,16 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			show_error("TDT Error: Improper number of args for chromatic animation!", true);
 		}
 		
+		style.style_color = c_white;
+		
 		/// @param {real} _time_ms
 		update = function(_time_ms) {
 			var _index = floor(_time_ms/change_ms) * steps_per_change;
 			_index += char_offset * character_index;
-			style.s_color = tag_decorated_text_get_chromatic_color_at(_index);
+			style.style_color = tag_decorated_text_get_chromatic_color_at(_index);
 		};
+		
+		_valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.WCHROMATIC) {
@@ -249,11 +269,15 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			show_error("TDT Error: Improper number of args for wchromatic animation!", true);
 		}
 		
+		style.style_color = c_white;
+		
 		/// @param {real} _time_ms
 		update = function(_time_ms) {
 			var _index = floor(_time_ms/change_ms) * steps_per_change;
-			style.s_color = tag_decorated_text_get_chromatic_color_at(_index);
+			style.style_color = tag_decorated_text_get_chromatic_color_at(_index);
 		};
+		
+		_valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.WAVE) {
@@ -269,12 +293,16 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			show_error("TDT Error: Improper number of args for wave animation!", true);
 		}
 		
+		style.mod_y = 0;
+		
 		/// @param {real} _time_ms
 		update = function(_time_ms) {
 			_time_ms %= cycle_time;
 			var _percent = _time_ms / cycle_time;
 			style.mod_y = sin(percent * -2 * pi + char_offset * character_index) * magnitude;
 		};
+		
+		_valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.FLOAT) {
@@ -287,12 +315,16 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			show_error("TDS Error: Improper number of args for float animation!", true);
 		}
 		
+		style.mod_y = 0;
+		
 		/// @param {real} _time_ms
 		update = function(_time_ms) {
 			_time_ms %= cycle_time;
 			var _percent = _time_ms / cycle_time;
 			style.mod_y = sin(_percent * 2 * pi + 0.5 * pi) * magnitude;
-		}
+		};
+		
+		_valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.WOBBLE) {
@@ -304,6 +336,10 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 		} else if (array_length(params) != 0) {
 			show_error("TDT Error: Improper number of args for wobble animation!", true);
 		}
+		
+		style.mod_x = 0;
+		style.mod_y = 0;
+		style.mod_angle = 0;
 		
 		/// @param {real} _time_ms
 		update = function(_time_ms) {
@@ -320,6 +356,18 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			if (style.mod_angle != 0 && os_browser == browser_not_a_browser) {
 				style.mod_y -= 2; // magic angle correct number, native only
 			}
-		}
+		};
+		
+		_valid_animation_command = true;
 	}
+	
+	if (!_valid_animation_command) return undefined;
+}
+
+/**
+ * Get an empty array that feather will recognize as type TagDecoratedTextAnimation.
+ * @return {array<struct.TagDecoratedTextAnimation>} an empty array of type TagDecoratedTextAnimations
+ */
+function tag_decorated_text_get_empty_array_animations() {
+	return array_create(0, new TagDecoratedTextAnimation(TAG_DECORATED_TEXT_COMMANDS.FADE, [], 0));
 }

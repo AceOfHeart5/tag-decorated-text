@@ -141,3 +141,12 @@ On reflection I think we can make the drawable calculate its content width, but 
 Ugh, no. Even if we do make functions that calculate content, it still makes more sense to store this data in a variable because it will be referenced every single draw cycle. We need to keep the performance of this as high as possible.
 
 After reading our own code a bit more, it looks like the left/right fields of drawables gets calculated outside the space of drawables. It happens on the "add_drawable" function, which is a method in the tag-decorated-text class. Perhaps we should rework our constructor to accept a left and right link immediately?
+
+
+3rd of December, 2022
+
+I was making the update function for the drawable and I noticed something. We modify the styles in the animations when we update them. However all the calculations are synched to the input. So if we keep putting in the same input we'll get the same result. So I wonder if we even need to track style in animations? Perhaps the animation update function could just accept the update time in ms, and spit back out a new style object with the correct changes applied.
+
+(got distracted by Heroku problems)
+
+Yes, we could totally get rid of the need for animations to keep track of their own styles. And instead generate them on draw. However I think perhaps we'll leave it alone for now and just get it working first. Also I believe letting all the structs store this data will make it more efficient.

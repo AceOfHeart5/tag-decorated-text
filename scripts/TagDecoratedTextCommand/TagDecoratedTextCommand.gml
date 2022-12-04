@@ -38,7 +38,10 @@ enum TAG_DECORATED_TEXT_COMMANDS {
 	WCHROMATIC,
 	WAVE,
 	FLOAT,
-	WOBBLE
+	WOBBLE,
+	
+	// other
+	SPRITE
 }
 
 /**
@@ -71,13 +74,13 @@ function string_to_tag_decorated_text_command(_command) {
 	if (_command == "white") {
 		return TAG_DECORATED_TEXT_COMMANDS.WHITE
 	}
-	if (_command == "gray" || command == "grey") {
+	if (_command == "gray" || _command == "grey") {
 		return TAG_DECORATED_TEXT_COMMANDS.GRAY;
 	}
-	if (_command == "ltgray" || command == "ltgrey") {
+	if (_command == "ltgray" || _command == "ltgrey") {
 		return TAG_DECORATED_TEXT_COMMANDS.LTGRAY;
 	}
-	if (_command == "dkgray" || command == "dkgrey") {
+	if (_command == "dkgray" || _command == "dkgrey") {
 		return TAG_DECORATED_TEXT_COMMANDS.DKGRAY;
 	}
 	if (_command == "teal") {
@@ -151,6 +154,9 @@ function string_to_tag_decorated_text_command(_command) {
 	}
 	if (_command == "wobble") {
 		return TAG_DECORATED_TEXT_COMMANDS.WOBBLE;
+	}
+	if (_command == "sprite") {
+		return TAG_DECORATED_TEXT_COMMANDS.SPRITE;
 	}
 	return -1;
 }
@@ -247,4 +253,12 @@ function TagDecoratedTextCommand(_command, _command_arguments) constructor {
 	if (command == TAG_DECORATED_TEXT_COMMANDS.PINK) {
 		convert_to_rgb(255, 51, 255);
 	}
+}
+
+/**
+ * Get an empty array that feather will recognize as type TagDecoratedTextCommands.
+ */
+function tag_decorated_text_get_empty_array_commands() {
+	var _command = new TagDecoratedTextCommand(TAG_DECORATED_TEXT_COMMANDS.FADE, []);
+	return array_create(0, _command);
 }

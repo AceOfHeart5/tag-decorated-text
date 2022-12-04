@@ -6,24 +6,26 @@
  * references.
  * @param {array<struct.TagDecoratedTextCharacter>} _character_arr the character array this drawable derives its data from
  * @param {real} _index the index in the character array
- * @param {struct.TagDecoratedTextDrawable} _previous the drawable before this in the linked list
- * @param {struct.TagDecoratedTextDrawable} _next the drawable after this in the linked list
  */
-function TagDecoratedTextDrawable(_character_arr, _index, _previous, _next) constructor {
+function TagDecoratedTextDrawable(_character_arr, _index) constructor {
 	character_array_reference = _character_arr; // this array is never modified
-	previous = _previous;
-	next = _next;
+	
+	// set links to self to trigger feather typing, but the immediately unset
+	previous = self;
+	next = self;
+	previous = undefined;
+	next = undefined;
+	
 	i_start = _index;
 	i_end = _index;
 	content = "";
 	content_width = 0;
 	content_height = 0;
 	style = character_array_reference[i_start].style.copy();
-	/// @param {struct.TagDecoratedTextAnimation} _animation animation
-	var _map = function(_animation) {
-		return _animation.copy();
-	};
-	animations = array_map(character_array_reference[i_start].animations, _map);
+	animations = tag_decorated_text_get_empty_array_animations();
+	for (var _i = 0; _i < array_length(character_array_reference[i_start].animations); _i++) {
+		array_push(animations, character_array_reference[i_start].animations[_i].copy());
+	}
 	animation_hash = "";
 	sprite = spr_tag_decorated_text_default;
 	
@@ -71,8 +73,8 @@ function TagDecoratedTextDrawable(_character_arr, _index, _previous, _next) cons
 	get_mergeable = function() {
 		if (sprite != undefined) return false;
 		
-		/// @param {boolean} _prev previous value
-		/// @param {struct.TagDecoratedTextAnimation} _animation current animation
+		/// @param {bool} _prev previous value
+		/// @param {struct.TagDecoratedTextAnimation} _animation current animation 
 		var _reduce = function(_prev, _animation) {
 			return _animation.mergeable ? _prev : false;
 		};
@@ -82,16 +84,20 @@ function TagDecoratedTextDrawable(_character_arr, _index, _previous, _next) cons
 	/**
 	 * Merges this drawable with the previous and next drawables it references. The 
 	 * previous and next drawables are destroyed. Drawables are only merged
-	 * if mergeable.
+	 * if mergeable. Returns a boolean indicating if a merge occurred.
 	 */
 	merge = function() {
+		var _result = false;
 		if (previous != undefined && previous.i_end + 1 == i_start && previous.get_mergeable()) {
 			i_start = previous.i_start;
+			_result = true;
 		}
 		if (next != undefined && i_end + 1 == next.i_start && next.get_mergeable()) {
 			i_end = next.i_end;
+			_result = true;
 		}
 		calculate_content();
+		return _result;
 	};
 	
 	/**
@@ -116,32 +122,61 @@ function TagDecoratedTextDrawable(_character_arr, _index, _previous, _next) cons
 	update = function(_time_ms) {
 		init();
 		for (var _i = 0; _i < array_length(animations); _i++) {
-			animations[_i].update(_time_ms)
-			var _s = drawable.animations[@ i].style
+			var _animation = animations[_i];
+			_animation.update(_time_ms);
+			var _s = _animation.style;
 			if (_s.mod_angle != undefined) {
-				drawable.style.mod_angle += _s.mod_angle
+				style.mod_angle += _s.mod_angle;
 			}
 			if (_s.s_color != undefined) {
-				drawable.style.s_color = _s.s_color
+				style.style_color = _s.style_color;
 			}
 			if (_s.font != undefined) {
-				drawable.style.font = _s.font
+				style.font = _s.font;
 			}
 			if (_s.alpha != undefined) {
-				drawable.style.alpha *= _s.alpha
+				style.alpha *= _s.alpha;
 			}
 			if (_s.mod_x != undefined) {
-				drawable.style.mod_x += _s.mod_x
+				style.mod_x += _s.mod_x;
 			}
 			if (_s.mod_y != undefined) {
-				drawable.style.mod_y += _s.mod_y
+				style.mod_y += _s.mod_y;
 			}
 			if (_s.scale_x != undefined) {
-				drawable.style.scale_x *= _s.scale_x
+				style.scale_x *= _s.scale_x;
 			}
 			if (_s.scale_y != undefined) {
-				drawable.style.scale_y *= _s.scale_y
+				style.scale_y *= _s.scale_y;
 			}
 		}
 	};
+	
+	/**
+	 * Draw this drawable at the given x y position.
+	 * @param {real} _x x position
+	 * @param {real} _y y position
+	 */
+	draw = function(_x, _y) {
+		draw_set_font(style.font);
+		draw_set_color(style.style_color);
+		draw_set_alpha(style.alpha);
+		var _draw_x = _x + character_array_reference[i_start].style.mod_x + style.mod_x;
+		var _draw_y = _y + character_array_reference[i_start].style.mod_y + style.mod_y;
+		if (sprite == undefined) {
+			draw_text_transformed(_draw_x, _draw_y, content, style.scale_x, style.scale_y, style.mod_angle);
+		} else {
+			draw_sprite_ext(sprite, 0, _draw_x, _draw_y, style.scale_x, style.scale_y, style.mod_angle, style.style_color, style.alpha);
+		}
+	};
+}
+
+/**
+ * Get an undefined value that feather recognizes as type drawable.
+ */
+function tag_decorated_text_get_undefined_drawable() {
+	var _charracter_array = array_create(1, new TagDecoratedTextCharacter("$", new TagDecoratedTextStyle(), tag_decorated_text_get_empty_array_animations(), 0));
+	var _result = new TagDecoratedTextDrawable(_charracter_array, 0);
+	_result = undefined;
+	return _result;
 }

@@ -29,3 +29,13 @@ function TagDecoratedTextCharacter(_character, _style, _animations, _line_index)
 		char_height = sprite_get_height(sprite) * style.scale_y;
 	};
 }
+
+/**
+ * Get empty array that feather recognizes as type TagDecoratedTextCharacter.
+ */
+function tag_decorated_text_get_empty_array_characters() {
+	var _style = new TagDecoratedTextStyle();
+	var _animations = tag_decorated_text_get_empty_array_animations();
+	var _character = new TagDecoratedTextCharacter("c", _style, _animations, 0)
+	return array_create(0, _character);
+}

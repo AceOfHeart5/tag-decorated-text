@@ -16,7 +16,7 @@ for (var _i = 0; _i < array_length(global.tag_decorated_text_animation_random_ar
  * Git a random number from 0 to 1 (inclusive 0, exclusive 1) given an index. Returns the same number for the same index.
  * @param {real} _index
  */
-function get_tag_decorated_text_random(_index) {
+function tag_decorated_text_get_random(_index) {
 	_index %= array_length(global.tag_decorated_text_animation_random_array);
 	return global.tag_decorated_text_animation_random_array[floor(_index)];
 }
