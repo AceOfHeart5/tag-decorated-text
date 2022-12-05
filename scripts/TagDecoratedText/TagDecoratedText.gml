@@ -158,9 +158,10 @@ function TagDecoratedText(_source_string) constructor {
 		for (var _i = 0; _i < array_length(_commands); _i ++) {
 			if (_commands[_i].command == TAG_DECORATED_TEXT_COMMANDS.SPRITE) {
 				if (array_length(_commands[_i].aargs) == 1) {
-					if (asset_get_type(_commands[_i].aargs[0]) == asset_sprite) {
-						_result = asset_get_index(aargs[0]);
+					if (asset_get_type(_commands[_i].aargs[0]) != asset_sprite) {
+						show_error("TDT Error: Given sprite \"" + _commands[_i].aargs[0] + "\" does not exist!", true);
 					}
+					_result = asset_get_index(_commands[_i].aargs[0]);
 				} else {
 					show_error("TDT Error: Improper number of args for sprite!", true);
 				}
