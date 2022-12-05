@@ -153,8 +153,8 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 		return string(command) + string(array_reduce(params, _reduce, ""));
 	}
 	
-	// we only return a valid animation object if the command used is an animation command
-	var _valid_animation_command = false;
+	// mark object as valid animation if command is animation command
+	valid_animation_command = false;
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.FADE) {
 		alpha_min = global.tds_animation_default_fade_alpha_min;
@@ -181,7 +181,7 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			var _new_alpha = alpha_min + _check/cycle_time * (alpha_max - alpha_min);
 			style.alpha = _new_alpha;
 		};
-		_valid_animation_command = true;
+		valid_animation_command = true;
 	}
 	
 	// we could totally combine the shake and tremble animation here, do later
@@ -207,7 +207,7 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			style.mod_y = floor(shake_magnitude * 2 * tag_decorated_text_get_random(_index_y)) - shake_magnitude;
 		};
 		
-		_valid_animation_command = true;
+		valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.TREMBLE) {
@@ -225,13 +225,13 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 		
 		/// @param {real} _time_ms
 		update = function(_time_ms) {
-			var _index_x = floor(time_ms / shake_time);
+			var _index_x = floor(_time_ms / shake_time);
 			var _index_y = _index_x + 4321; // arbitrary character index offset
 			style.mod_x = floor(shake_magnitude * 2 * tag_decorated_text_get_random(_index_x)) - shake_magnitude;
 			style.mod_y = floor(shake_magnitude * 2 * tag_decorated_text_get_random(_index_y)) - shake_magnitude;
 		};
 		
-		_valid_animation_command = true;
+		valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.CHROMATIC) {
@@ -256,7 +256,7 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			style.style_color = tag_decorated_text_get_chromatic_color_at(_index);
 		};
 		
-		_valid_animation_command = true;
+		valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.WCHROMATIC) {
@@ -277,7 +277,7 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			style.style_color = tag_decorated_text_get_chromatic_color_at(_index);
 		};
 		
-		_valid_animation_command = true;
+		valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.WAVE) {
@@ -299,10 +299,10 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 		update = function(_time_ms) {
 			_time_ms %= cycle_time;
 			var _percent = _time_ms / cycle_time;
-			style.mod_y = sin(percent * -2 * pi + char_offset * character_index) * magnitude;
+			style.mod_y = sin(_percent * -2 * pi + char_offset * character_index) * magnitude;
 		};
 		
-		_valid_animation_command = true;
+		valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.FLOAT) {
@@ -324,7 +324,7 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			style.mod_y = sin(_percent * 2 * pi + 0.5 * pi) * magnitude;
 		};
 		
-		_valid_animation_command = true;
+		valid_animation_command = true;
 	}
 	
 	if (command == TAG_DECORATED_TEXT_COMMANDS.WOBBLE) {
@@ -358,10 +358,8 @@ function TagDecoratedTextAnimation(_command, _aargs, _char_index) constructor {
 			}
 		};
 		
-		_valid_animation_command = true;
+		valid_animation_command = true;
 	}
-	
-	if (!_valid_animation_command) return undefined;
 }
 
 /**

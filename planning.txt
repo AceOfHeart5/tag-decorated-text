@@ -150,3 +150,13 @@ I was making the update function for the drawable and I noticed something. We mo
 (got distracted by Heroku problems)
 
 Yes, we could totally get rid of the need for animations to keep track of their own styles. And instead generate them on draw. However I think perhaps we'll leave it alone for now and just get it working first. Also I believe letting all the structs store this data will make it more efficient.
+
+
+4th of December, 2022
+
+I realized something kind of frustrating. It looks like even feather, GameMaker still struggles to recognize method variables outside of the file they're defined in. I think we should stick to making global functions that accept an instance of something to interact with it. So we'll have something like:
+
+var _my_text = "hello world";
+tag_decorated_string_draw(_my_text, 40, 40);
+
+Truthfully I'm wondering if this giant re-write was even worth it. I think it helped us get our head back in the code, but we may end up reverting a lot of these changes. 

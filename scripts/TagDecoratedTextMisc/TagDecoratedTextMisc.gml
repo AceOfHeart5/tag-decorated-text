@@ -5,12 +5,13 @@ var _test = array_map(array_create(1000000, 0), function() {
 });
 
 /// @ignore
-global.tag_decorated_text_animation_random_array = array_create(1000000, 0);
-
+global.tag_decorated_text_animation_random_array = _test;//array_create(1000000, 0);
+/*
 // this may be a perfect spot for array_map, revisit once code is running
 for (var _i = 0; _i < array_length(global.tag_decorated_text_animation_random_array); _i++) {
 	global.tag_decorated_text_animation_random_array[_i] = random(1);
 }
+*/
 
 /**
  * Git a random number from 0 to 1 (inclusive 0, exclusive 1) given an index. Returns the same number for the same index.

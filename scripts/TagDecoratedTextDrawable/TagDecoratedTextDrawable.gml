@@ -27,7 +27,15 @@ function TagDecoratedTextDrawable(_character_arr, _index) constructor {
 		array_push(animations, character_array_reference[i_start].animations[_i].copy());
 	}
 	animation_hash = "";
-	sprite = spr_tag_decorated_text_default;
+	
+	sprite = function() {
+		/*
+		Drawables are designed to be unmergeable if any of its characters contain sprites.
+		So we know that all drawables only refer to one index if they contain a sprite. So
+		we can just use i_start here.
+		*/
+		return character_array_reference[i_start].sprite;
+	};
 	
 	/**
 	 * Calculates the content, sprite, and content widths and heights for
@@ -35,17 +43,10 @@ function TagDecoratedTextDrawable(_character_arr, _index) constructor {
 	 * animations.
 	 */
 	calculate_content = function() {
-		content = "";
-		/*
-		Drawables are designed to be unmergeable if any of its characters contain sprites.
-		So we know that all drawables only refer to one index if they contain a sprite. So
-		we can just use i_start here.
-		*/
-		sprite = character_array_reference[i_start].sprite;
-		
+		content = "";		
 		var _content_width = 0;
 		var _content_height = 0;
-		if (sprite == undefined) {
+		if (sprite() == undefined) {
 			for (var _i = i_start; _i <= i_end; _i++) {
 				content += character_array_reference[_i].character;
 				_content_width += character_array_reference[_i].char_width;
@@ -54,8 +55,8 @@ function TagDecoratedTextDrawable(_character_arr, _index) constructor {
 				}
 			}
 		} else {
-			_content_width = sprite_get_width(sprite) * style.scale_x;
-			_content_height = sprite_get_height(sprite) * style.scale_y;
+			_content_width = sprite_get_width(sprite()) * style.scale_x;
+			_content_height = sprite_get_height(sprite()) * style.scale_y;
 		}
 		
 		animation_hash = "";
@@ -69,35 +70,67 @@ function TagDecoratedTextDrawable(_character_arr, _index) constructor {
 	
 	/**
 	 * Returns a boolean indicating if this drawable can be merged with others.
+	 * based on its sprite status and animations.
 	 */
 	get_mergeable = function() {
-		if (sprite != undefined) return false;
-		
-		/// @param {bool} _prev previous value
-		/// @param {struct.TagDecoratedTextAnimation} _animation current animation 
-		var _reduce = function(_prev, _animation) {
-			return _animation.mergeable ? _prev : false;
-		};
-		return bool(array_reduce(animations, _reduce, true));
+		if (sprite() != undefined) return false;
+		var _result = true;
+		for (var _i = 0; _i < array_length(animations); _i++) {
+			var _animation_mergeable = animations[_i].mergeable;
+			if (!_animation_mergeable) {
+				_result = false;
+				_i = array_length(animations);
+			}
+		}
+		return _result;
 	};
 	
 	/**
 	 * Merges this drawable with the previous and next drawables it references. The 
 	 * previous and next drawables are destroyed. Drawables are only merged
 	 * if mergeable. Returns a boolean indicating if a merge occurred.
+	 *
+	 * We have to redo this. Instead this drawable is destroyed and all content is 
+	 * is merge to the left.
 	 */
 	merge = function() {
-		var _result = false;
-		if (previous != undefined && previous.i_end + 1 == i_start && previous.get_mergeable()) {
-			i_start = previous.i_start;
-			_result = true;
-		}
-		if (next != undefined && i_end + 1 == next.i_start && next.get_mergeable()) {
+		if (!get_mergeable()) return;
+		
+		// merge previous with this
+		if (
+			previous != undefined && 
+			previous.i_end + 1 == i_start && 
+			previous.get_mergeable() && 
+			previous.animation_hash == animation_hash && 
+			character_array_reference[previous.i_start].line_index == character_array_reference[i_start].line_index
+		) {
+			previous.i_end = i_end;
+			previous.next = next;
+			
+			// merge previous with next
+			if (next != undefined && 
+				previous.i_end + 1 == next.i_start &&
+				next.get_mergeable() &&
+				previous.animation_hash == next.animation_hash &&
+				character_array_reference[previous.i_start].line_index == character_array_reference[next.i_start].line_index
+			) {
+				previous.i_end = next.i_end;
+				previous.next = next.next;
+			}
+			
+			previous.calculate_content();
+		// merge this with next
+		} else if (
+			next != undefined &&
+			i_end + 1 == next.i_start &&
+			next.get_mergeable() &&
+			animation_hash == next.animation_hash &&
+			character_array_reference[i_start].line_index == character_array_reference[next.i_start].line_index
+		) {
 			i_end = next.i_end;
-			_result = true;
+			next = next.next;
+			calculate_content();
 		}
-		calculate_content();
-		return _result;
 	};
 	
 	/**
@@ -128,7 +161,7 @@ function TagDecoratedTextDrawable(_character_arr, _index) constructor {
 			if (_s.mod_angle != undefined) {
 				style.mod_angle += _s.mod_angle;
 			}
-			if (_s.s_color != undefined) {
+			if (_s.style_color != undefined) {
 				style.style_color = _s.style_color;
 			}
 			if (_s.font != undefined) {
@@ -161,12 +194,16 @@ function TagDecoratedTextDrawable(_character_arr, _index) constructor {
 		draw_set_font(style.font);
 		draw_set_color(style.style_color);
 		draw_set_alpha(style.alpha);
-		var _draw_x = _x + character_array_reference[i_start].style.mod_x + style.mod_x;
-		var _draw_y = _y + character_array_reference[i_start].style.mod_y + style.mod_y;
-		if (sprite == undefined) {
+		var _char_x = character_array_reference[i_start].char_x;
+		var _char_y = character_array_reference[i_start].char_y;
+		var _char_style_mod_x = character_array_reference[i_start].style.mod_x;
+		var _char_style_mod_y = character_array_reference[i_start].style.mod_y;
+		var _draw_x = _x + _char_x + _char_style_mod_x + style.mod_x;
+		var _draw_y = _y + _char_y + _char_style_mod_y + style.mod_y;
+		if (sprite() == undefined) {
 			draw_text_transformed(_draw_x, _draw_y, content, style.scale_x, style.scale_y, style.mod_angle);
 		} else {
-			draw_sprite_ext(sprite, 0, _draw_x, _draw_y, style.scale_x, style.scale_y, style.mod_angle, style.style_color, style.alpha);
+			draw_sprite_ext(sprite(), 0, _draw_x, _draw_y, style.scale_x, style.scale_y, style.mod_angle, style.style_color, style.alpha);
 		}
 	};
 }

@@ -6,7 +6,7 @@ function TagDecoratedText(_source_string) constructor {
 	source = "";
 	characters = tag_decorated_text_get_empty_array_characters();
 	default_style = new TagDecoratedTextStyle();
-	max_width = 500;
+	max_width = 400;
 	drawables = tag_decorated_text_get_undefined_drawable();
 	drawables = undefined;
 	drawables_end = drawables;
@@ -20,7 +20,7 @@ function TagDecoratedText(_source_string) constructor {
 	is added to the character array.
 	*/
 	line_width = 0;
-	line_index = 0
+	line_index = 0;
 	/**
 	 * Adds a character to the character array. Should only be used during text parsing.
 	 *@param {struct.TagDecoratedTextCharacter} _character
@@ -49,12 +49,12 @@ function TagDecoratedText(_source_string) constructor {
 		if (drawables == undefined) {
 			drawables = _drawable;
 			drawables_end = _drawable;
-			return
 		} else {
+			_drawable.previous = drawables_end;
 			drawables_end.next = _drawable;
-			drawables_end = drawables_end.next;
+			_drawable.merge();
+			while (drawables_end.next != undefined) drawables_end = drawables_end.next;
 		}
-		_drawable.merge();
 	};
 	
 	/**
@@ -159,7 +159,7 @@ function TagDecoratedText(_source_string) constructor {
 			if (_commands[_i].command == TAG_DECORATED_TEXT_COMMANDS.SPRITE) {
 				if (array_length(_commands[_i].aargs) == 1) {
 					if (asset_get_type(_commands[_i].aargs[0]) == asset_sprite) {
-						_result = asset_get_index(aargs[@ 0]);
+						_result = asset_get_index(aargs[0]);
 					}
 				} else {
 					show_error("TDT Error: Improper number of args for sprite!", true);
@@ -178,7 +178,7 @@ function TagDecoratedText(_source_string) constructor {
 		var _result = tag_decorated_text_get_empty_array_animations();
 		for (var _i = 0; _i < array_length(_commands); _i++) {
 			var _animation = new TagDecoratedTextAnimation(_commands[_i].command, _commands[_i].aargs, _char_index);
-			if (_animation != undefined) array_push(_result, _animation);
+			if (_animation.valid_animation_command) array_push(_result, _animation);
 		}
 		return _result;
 	};
@@ -211,7 +211,7 @@ function TagDecoratedText(_source_string) constructor {
 			_cursor.draw(_x, _y);
 			_cursor = _cursor.next;
 		}
-		draw_set_color(c_fuchsia)
+		draw_set_color(c_fuchsia);
 		draw_rectangle(_x, _y, _x + max_width, _y + 480, true);
 		
 	};

@@ -7,7 +7,7 @@
     {"id":{"name":"TagDecoratedTextStyle","path":"scripts/TagDecoratedTextStyle/TagDecoratedTextStyle.yy",},"order":1,},
     {"id":{"name":"TagDecoratedText","path":"scripts/TagDecoratedText/TagDecoratedText.yy",},"order":0,},
     {"id":{"name":"TagDecoratedTextAnimation","path":"scripts/TagDecoratedTextAnimation/TagDecoratedTextAnimation.yy",},"order":4,},
-    {"id":{"name":"f_handwriting","path":"fonts/f_handwriting/f_handwriting.yy",},"order":17,},
+    {"id":{"name":"fnt_handwriting","path":"fonts/fnt_handwriting/fnt_handwriting.yy",},"order":17,},
     {"id":{"name":"oTest","path":"objects/oTest/oTest.yy",},"order":16,},
     {"id":{"name":"TagDecoratedTextCharacter","path":"scripts/TagDecoratedTextCharacter/TagDecoratedTextCharacter.yy",},"order":6,},
     {"id":{"name":"fnt_tag_decorated_text_font_default","path":"fonts/fnt_tag_decorated_text_font_default/fnt_tag_decorated_text_font_default.yy",},"order":2,},
